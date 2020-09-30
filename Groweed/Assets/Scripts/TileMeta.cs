@@ -4,5 +4,10 @@ using UnityEngine;
 
 public class TileMeta
 {
-    
+    object metaData { get; set; };
+
+    public TileMeta( object metaData )
+    {
+        this.metaData = metaData;
+    }
 }

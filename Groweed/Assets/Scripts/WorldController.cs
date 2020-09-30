@@ -114,6 +114,10 @@ public class WorldController : MonoBehaviour
         obj_go.name = obj.type + "_" + obj.tile.x + "_" + obj.tile.y;
         obj_go.transform.position = new Vector3(obj.tile.x, obj.tile.y, ((float)obj.tile.y/(float)height));
         obj_go.transform.SetParent(this.transform, true);
+        BoxCollider2D bc = obj_go.AddComponent<BoxCollider2D>();
+        bc.offset = new Vector2(0.5f,0.5f);
+        bc.size = new Vector2(0.75f,0.75f);
+
 
         string spriteKey;
         if(obj.ruleTile)
