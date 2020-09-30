@@ -8,6 +8,8 @@ public class Tile
 
     string type = "Grass";
     Action<Tile> cbTileTypeChanged;
+    TileMeta[] meta;
+    
     public string Type { get => type; set
         {
             if (type == value) return;

@@ -60,12 +60,12 @@ public class MouseController : MonoBehaviour
             tileCursor.SetActive(false);
         }
 
-        // ---------------------------------- Camera Panning
-        if (Input.GetMouseButton(1) || Input.GetMouseButton(2))
+        // ---------------------------------- Camera Panning --DISABLED FOR PLAYER MOVEMENT--
+        /*if (Input.GetMouseButton(1) || Input.GetMouseButton(2))
         {
             Vector3 diff = lastFramePosition - currFramePosition;
             Camera.main.transform.Translate(diff);
-        }
+        }*/
 
         // ---------------------------------- Select Area Thingy
         if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())

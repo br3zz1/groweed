@@ -112,7 +112,7 @@ public class WorldController : MonoBehaviour
         installedObjectGameObjectMap.Add(obj, obj_go);
 
         obj_go.name = obj.type + "_" + obj.tile.x + "_" + obj.tile.y;
-        obj_go.transform.position = new Vector3(obj.tile.x, obj.tile.y, 0);
+        obj_go.transform.position = new Vector3(obj.tile.x, obj.tile.y, ((float)obj.tile.y/(float)height));
         obj_go.transform.SetParent(this.transform, true);
 
         string spriteKey;
