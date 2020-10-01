@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TileMeta
 {
-    object metaData { get; set; };
+    object metaData { get; set; }
 
     public TileMeta( object metaData )
     {
