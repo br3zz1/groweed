@@ -9,9 +9,10 @@ public class InstalledObject
     public string type { get; protected set; }
     public Tile tile { get; protected set; }
 
-    float movementCost = 1f;
+    public float movementCost { get; protected set; }
     public bool ruleTile { get; protected set; }
     public string dragBuildPattern;
+    public string layer { get; protected set; }
 
     int width;
     int height;
@@ -25,7 +26,7 @@ public class InstalledObject
 
     }
 
-    public static InstalledObject CreatePrototype(string type, int width=1, int height=1, float moveCost=1f, bool ruleTile=false, string dragBuildPattern = "Single")
+    public static InstalledObject CreatePrototype(string type, int width=1, int height=1, float moveCost=1f, bool ruleTile=false, string dragBuildPattern = "Single", string layer = "Default")
     {
         InstalledObject obj = new InstalledObject();
         obj.type = type;
@@ -34,6 +35,7 @@ public class InstalledObject
         obj.movementCost = moveCost;
         obj.ruleTile = ruleTile;
         obj.dragBuildPattern = dragBuildPattern;
+        obj.layer = layer;
         return obj;
     }
 
@@ -46,12 +48,17 @@ public class InstalledObject
         obj.movementCost = proto.movementCost;
         obj.ruleTile = proto.ruleTile;
         obj.dragBuildPattern = proto.dragBuildPattern;
+        obj.layer = proto.layer;
 
         obj.tile = tile;
         if(tile.installedObject != null)
         {
-            Debug.LogError("Object already installed at this tile!");
-            return null;
+            if(tile.installedObject.layer != "Background")
+            {
+                Debug.LogError("Object already installed at this tile!");
+                return null;
+            }
+            tile.world.RemoveInstalledObject(tile);
         }
         tile.InstallObject(obj);
 

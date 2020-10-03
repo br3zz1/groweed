@@ -7,11 +7,12 @@ public class KeyController : MonoBehaviour
 {
     public float playerSpeed;
     public GameObject player;
+    Rigidbody2D rb;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        rb = player.GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame
@@ -19,6 +20,9 @@ public class KeyController : MonoBehaviour
     {
         float moveX = Input.GetAxisRaw("Horizontal");
         float moveY = Input.GetAxisRaw("Vertical");
-        player.transform.position += new Vector3(moveX,moveY,0) * playerSpeed * Time.deltaTime;
+        rb.velocity = new Vector2(moveX * playerSpeed, moveY * playerSpeed);
+        Vector3 pos = player.transform.position;
+        Vector3 newPos = new Vector3(pos.x, pos.y, pos.y / 100);
+        player.transform.position = newPos;
     }
 }

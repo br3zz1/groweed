@@ -46,7 +46,11 @@ public class Tile
     public void InstallObject(InstalledObject obj)
     {
         if (obj == null) installedObject = null;
-        if (installedObject != null) return;
+        if (installedObject != null)
+        {
+            if (installedObject.layer != "Background") return;
+            world.RemoveInstalledObject(this);
+        }
         installedObject = obj;
     }
 

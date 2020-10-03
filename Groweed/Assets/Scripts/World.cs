@@ -60,7 +60,18 @@ public class World
         {
             for (int y = height-1; y >= 0; y--)
             {
-                if (UnityEngine.Random.Range(0, 1000) > 925 && tiles[x,y].Type == "Grass") PlaceInstalledObject("Tree", tiles[x, y]);
+                if (UnityEngine.Random.Range(0, 1000) > 925 && tiles[x, y].Type == "Grass")
+                {
+                    PlaceInstalledObject("Tree", tiles[x, y]);
+                }
+                else if (UnityEngine.Random.Range(0, 1000) > 975 && (tiles[x, y].Type == "Grass" || tiles[x,y].Type == "Sand"))
+                {
+                    PlaceInstalledObject("Rocks1", tiles[x, y]);
+                }
+                else if (UnityEngine.Random.Range(0, 1000) > 975 && (tiles[x, y].Type == "Grass" || tiles[x, y].Type == "Sand"))
+                {
+                    PlaceInstalledObject("Rocks2", tiles[x, y]);
+                }
             }
         }
     }
@@ -179,5 +190,11 @@ public class World
         InstalledObject treePrototype = InstalledObject.CreatePrototype("Tree", 1, 1, 0f, false, "Single");
         installedObjectPrototypes.Add("Tree", treePrototype);
         ButtonMenuScript.Instance.GenerateButton("objects", "Tree", "Tree");
+        InstalledObject rocks1Prototype = InstalledObject.CreatePrototype("Rocks1", 1, 1, 1f, false, "Single", "Background");
+        installedObjectPrototypes.Add("Rocks1", rocks1Prototype);
+        ButtonMenuScript.Instance.GenerateButton("objects", "Rocks1", "Rocks1");
+        InstalledObject rocks2Prototype = InstalledObject.CreatePrototype("Rocks2", 1, 1, 1f, false, "Single", "Background");
+        installedObjectPrototypes.Add("Rocks2", rocks2Prototype);
+        ButtonMenuScript.Instance.GenerateButton("objects", "Rocks2", "Rocks2");
     }
 }
