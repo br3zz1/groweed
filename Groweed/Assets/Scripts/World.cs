@@ -162,6 +162,16 @@ public class World
         return installedObjectPrototypes[name].dragBuildPattern;
     }
 
+    public int getInstalledObjectPrototypeStages(string name)
+    {
+        if (installedObjectPrototypes.ContainsKey(name) == false)
+        {
+            Debug.LogError("Prototype not found: " + name);
+            return 0;
+        }
+        return installedObjectPrototypes[name].stages;
+    }
+
     public void RegisterInstalledObjectCreatedCB(Action<InstalledObject> cb)
     {
         installedObjectCreatedCB += cb;
@@ -184,17 +194,20 @@ public class World
 
     public void AddInstalledObjectPrototypes()
     {
-        InstalledObject wallPrototype = InstalledObject.CreatePrototype("Wall", 1, 1, 0f, true, "Fill");
+        InstalledObject wallPrototype = InstalledObject.CreatePrototype("Wall", moveCost: 0f, ruleTile: true, dragBuildPattern: "Fill");
         installedObjectPrototypes.Add("Wall", wallPrototype);
         ButtonMenuScript.Instance.GenerateButton("objects", "Wall", "Wall");
-        InstalledObject treePrototype = InstalledObject.CreatePrototype("Tree", 1, 1, 0f, false, "Single");
+        InstalledObject treePrototype = InstalledObject.CreatePrototype("Tree", moveCost: 0f);
         installedObjectPrototypes.Add("Tree", treePrototype);
         ButtonMenuScript.Instance.GenerateButton("objects", "Tree", "Tree");
-        InstalledObject rocks1Prototype = InstalledObject.CreatePrototype("Rocks1", 1, 1, 1f, false, "Single", "Background");
+        InstalledObject rocks1Prototype = InstalledObject.CreatePrototype("Rocks1", layer: "Background");
         installedObjectPrototypes.Add("Rocks1", rocks1Prototype);
         ButtonMenuScript.Instance.GenerateButton("objects", "Rocks1", "Rocks1");
-        InstalledObject rocks2Prototype = InstalledObject.CreatePrototype("Rocks2", 1, 1, 1f, false, "Single", "Background");
+        InstalledObject rocks2Prototype = InstalledObject.CreatePrototype("Rocks2", layer: "Background");
         installedObjectPrototypes.Add("Rocks2", rocks2Prototype);
         ButtonMenuScript.Instance.GenerateButton("objects", "Rocks2", "Rocks2");
+        InstalledObject plantPrototype = InstalledObject.CreatePrototype("Plant", stages: 4);
+        installedObjectPrototypes.Add("Plant", plantPrototype);
+        ButtonMenuScript.Instance.GenerateButton("objects", "Plant", "Plant");
     }
 }

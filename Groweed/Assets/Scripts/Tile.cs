@@ -14,7 +14,7 @@ public class Tile
         {
             if (type == value) return;
             type = value;
-            if(cbTileTypeChanged != null) cbTileTypeChanged(this);
+            cbTileTypeChanged?.Invoke(this);
         } 
     }
 

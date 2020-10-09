@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
 public class InstalledObject
@@ -13,7 +14,16 @@ public class InstalledObject
     public bool ruleTile { get; protected set; }
     public string dragBuildPattern;
     public string layer { get; protected set; }
-
+    int stage; 
+    public int Stage{ get => stage; set 
+        {
+            if (stage == value) return;
+            stage = value;
+            changeCB?.Invoke(this);
+        }
+    }
+    public int stages;
+    public Action updateAction;
     int width;
     int height;
 
@@ -26,7 +36,7 @@ public class InstalledObject
 
     }
 
-    public static InstalledObject CreatePrototype(string type, int width=1, int height=1, float moveCost=1f, bool ruleTile=false, string dragBuildPattern = "Single", string layer = "Default")
+    public static InstalledObject CreatePrototype(string type, int width=1, int height=1, float moveCost=1f, bool ruleTile=false, string dragBuildPattern = "Single", string layer = "Default", int stages = 0)
     {
         InstalledObject obj = new InstalledObject();
         obj.type = type;
@@ -36,6 +46,7 @@ public class InstalledObject
         obj.ruleTile = ruleTile;
         obj.dragBuildPattern = dragBuildPattern;
         obj.layer = layer;
+        obj.stages = stages;
         return obj;
     }
 
@@ -49,6 +60,8 @@ public class InstalledObject
         obj.ruleTile = proto.ruleTile;
         obj.dragBuildPattern = proto.dragBuildPattern;
         obj.layer = proto.layer;
+        obj.stages = proto.stages;
+        obj.stage = 0;
 
         obj.tile = tile;
         if(tile.installedObject != null)

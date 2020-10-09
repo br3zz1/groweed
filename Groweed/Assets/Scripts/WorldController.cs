@@ -128,6 +128,9 @@ public class WorldController : MonoBehaviour
         if(obj.ruleTile)
         {
             spriteKey = obj.type + getRuleTileForInstalledObject(obj);
+        } else if(obj.stages != 0)
+        {
+            spriteKey = obj.type + "_" + obj.Stage;
         } else
         {
             spriteKey = obj.type;
@@ -162,8 +165,10 @@ public class WorldController : MonoBehaviour
         if (obj.ruleTile)
         {
             spriteKey = obj.type + getRuleTileForInstalledObject(obj);
-        }
-        else
+        } else if (obj.stages != 0)
+        {
+            spriteKey = obj.type + "_" + obj.Stage;
+        } else
         {
             spriteKey = obj.type;
         }
@@ -235,6 +240,10 @@ public class WorldController : MonoBehaviour
         {
             return installedObjectSprites[name + "_0"];
         }
+        if (world.getInstalledObjectPrototypeStages(name) != 0)
+        {
+            return installedObjectSprites[name + "_0"];
+        }
         return installedObjectSprites[name];
     }
 
@@ -266,6 +275,14 @@ public class WorldController : MonoBehaviour
                 if (ntile_data.Type == "Water") dirtchance++;
             }
             if (dirtchance > Random.Range(0, 8)) tile_data.Type = "Sand";
+        }
+        if(tile_data.installedObject != null)
+        {
+            InstalledObject obj = tile_data.installedObject;
+            if(obj.type == "Plant")
+            {
+                if(obj.Stage < obj.stages - 1) obj.Stage++;
+            }
         }
     }
 }
