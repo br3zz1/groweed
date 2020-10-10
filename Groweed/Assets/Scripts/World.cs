@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class World
 {
@@ -40,15 +42,25 @@ public class World
                 float yCoord = (float)y*2;
                 float dist = Vector2.Distance(new Vector2(x,y),new Vector2(width/2,height/2)) / (width/2);
                 //Debug.Log(sng.getDensity(new Vector3(xCoord, yCoord, 0)));
-                if ( 1 - dist + sng.coherentNoise(x,y,0) > 0.6f)
+                if (1 - dist + sng.coherentNoise(x, y, 0) > 0.6f)
                 {
                     tiles[x, y].Type = "Grass";
-                } else if (1 - dist + sng.coherentNoise(x, y, 0) > 0.5f)
+                }
+                else if (1 - dist + sng.coherentNoise(x, y, 0) > 0.5f)
                 {
                     tiles[x, y].Type = "Sand";
-                } else 
+                }
+                else if (1 - dist + sng.coherentNoise(x, y, 0) > 0.4f)
+                {
+                    tiles[x, y].Type = "WaterShallow";
+                }
+                else if (1 - dist + sng.coherentNoise(x, y, 0) > 0.3f)
                 {
                     tiles[x, y].Type = "Water";
+                }
+                else 
+                {
+                    tiles[x, y].Type = "WaterDeep";
                 }
             }
         }
@@ -83,7 +95,22 @@ public class World
             Debug.LogError("Can't find prototype named: " + objectType);
             return;
         }
-        InstalledObject obj = InstalledObject.InstallObject(installedObjectPrototypes[objectType],t);
+        InstalledObject proto = installedObjectPrototypes[objectType];
+        if (proto.blacklistedTiles != null)
+        {
+            if (proto.blacklistedTiles.Contains(t.Type))
+            {
+                return;
+            }
+        }
+        if (proto.whitelistedTiles != null)
+        {
+            if (!proto.whitelistedTiles.Contains(t.Type))
+            {
+                return;
+            }
+        }
+        InstalledObject obj = InstalledObject.InstallObject(proto, t);
         if (obj == null) return;
         if (installedObjectCreatedCB != null) installedObjectCreatedCB(obj);
     }
@@ -101,6 +128,11 @@ public class World
             InstalledObject.UpdateNeighbours(t, obj);
         }
         if (installedObjectRemovedCB != null)installedObjectRemovedCB(obj);
+    }
+
+    public void PlaceLooseObject(ItemStack stack, Tile t)
+    {
+        LooseObject looseObject = new LooseObject(t,stack);
     }
 
     public Tile GetTileAt(int x, int y)
@@ -194,19 +226,20 @@ public class World
 
     public void AddInstalledObjectPrototypes()
     {
-        InstalledObject wallPrototype = InstalledObject.CreatePrototype("Wall", moveCost: 0f, ruleTile: true, dragBuildPattern: "Fill");
+        string[] defaultBlacklist = { "Water", "WaterShallow", "WaterDeep"};
+        InstalledObject wallPrototype = InstalledObject.CreatePrototype("Wall", moveCost: 0f, ruleTile: true, dragBuildPattern: "Fill", blacklistedTiles: defaultBlacklist);
         installedObjectPrototypes.Add("Wall", wallPrototype);
         //ButtonMenuScript.Instance.GenerateButton("objects", "Wall", "Wall",WorldController.Instance.getInstalledObjectSpriteByName("Wall"));
-        InstalledObject treePrototype = InstalledObject.CreatePrototype("Tree", moveCost: 0f);
+        InstalledObject treePrototype = InstalledObject.CreatePrototype("Tree", moveCost: 0f, blacklistedTiles: defaultBlacklist);
         installedObjectPrototypes.Add("Tree", treePrototype);
         //ButtonMenuScript.Instance.GenerateButton("objects", "Tree", "Tree", WorldController.Instance.getInstalledObjectSpriteByName("Tree"));
-        InstalledObject rocks1Prototype = InstalledObject.CreatePrototype("Rocks1", layer: "Background");
+        InstalledObject rocks1Prototype = InstalledObject.CreatePrototype("Rocks1", layer: "Background", blacklistedTiles: defaultBlacklist);
         installedObjectPrototypes.Add("Rocks1", rocks1Prototype);
         //ButtonMenuScript.Instance.GenerateButton("objects", "Rocks1", "Rocks1", WorldController.Instance.getInstalledObjectSpriteByName("Rocks1"));
-        InstalledObject rocks2Prototype = InstalledObject.CreatePrototype("Rocks2", layer: "Background");
+        InstalledObject rocks2Prototype = InstalledObject.CreatePrototype("Rocks2", layer: "Background", blacklistedTiles: defaultBlacklist);
         installedObjectPrototypes.Add("Rocks2", rocks2Prototype);
         //ButtonMenuScript.Instance.GenerateButton("objects", "Rocks2", "Rocks2", WorldController.Instance.getInstalledObjectSpriteByName("Rocks2"));
-        InstalledObject plantPrototype = InstalledObject.CreatePrototype("Plant", stages: 4);
+        InstalledObject plantPrototype = InstalledObject.CreatePrototype("Plant", stages: 4, blacklistedTiles: defaultBlacklist);
         installedObjectPrototypes.Add("Plant", plantPrototype);
         //ButtonMenuScript.Instance.GenerateButton("objects", "Plant", "Plant", WorldController.Instance.getInstalledObjectSpriteByName("Plant"));
     }

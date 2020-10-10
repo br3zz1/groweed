@@ -28,6 +28,8 @@ public class WorldController : MonoBehaviour
 
     public int randomTickSpeed = 10;
 
+    public Inventory playerInv;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -39,6 +41,10 @@ public class WorldController : MonoBehaviour
 
         // Load sprites to dictionaries
         LoadSprites();
+
+        // Instantiate player inventory
+        playerInv = new Inventory(9);
+        playerInv.RegisterChangeCB(ButtonMenuScript.Instance.onInventoryChanged);
 
         // Generate world
         world = new World(width,height);
@@ -69,6 +75,9 @@ public class WorldController : MonoBehaviour
                 tile_go.transform.SetParent(this.transform, true);
                 
                 tile_go.AddComponent<SpriteRenderer>();
+                BoxCollider2D bc = tile_go.AddComponent<BoxCollider2D>();
+                bc.offset = new Vector2(0.5f, 0.5f);
+                bc.size = new Vector2(1f, 1f);
                 onTileTypeChanged(tile_data);
 
                 tile_data.RegisterTileTypeChangedCB(onTileTypeChanged);
@@ -113,6 +122,17 @@ public class WorldController : MonoBehaviour
             return;
         }
         tile_go.GetComponent<SpriteRenderer>().sprite = tileSprites[tile_data.Type];
+
+        //Set Collider
+        BoxCollider2D bc = tile_go.GetComponent<BoxCollider2D>();
+        if (tile_data.Type == "WaterShallow")
+        {
+            bc.enabled = true;
+            
+        } else
+        {
+            bc.enabled = false;
+        }
     }
 
     void onInstalledObjectCreated(InstalledObject obj)

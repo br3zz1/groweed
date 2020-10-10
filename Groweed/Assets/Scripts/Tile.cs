@@ -45,6 +45,7 @@ public class Tile
 
     public void InstallObject(InstalledObject obj)
     {
+        if (obj == null) installedObject = null;
         if (installedObject != null || looseObject != null)
         {
             return;
@@ -54,7 +55,8 @@ public class Tile
 
     public bool SetLooseObject(LooseObject obj)
     {
-        if(installedObject != null || looseObject != null)
+        if (obj == null) looseObject = null;
+        if (installedObject != null || looseObject != null)
         {
             return false;
         }

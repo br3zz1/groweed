@@ -20,7 +20,7 @@ public class Item
         items.Add(item);
     }
 
-    public Item getItemByType(string type)
+    public static Item getItemByType(string type)
     {
         foreach(Item item in items)
         {

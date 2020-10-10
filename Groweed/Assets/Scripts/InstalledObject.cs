@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class InstalledObject
 {
+
     public string type { get; protected set; }
     public Tile tile { get; protected set; }
 
@@ -22,6 +23,9 @@ public class InstalledObject
     int width;
     int height;
 
+    public string[] whitelistedTiles { get; protected set; }
+    public string[] blacklistedTiles { get; protected set; }
+
     Action<InstalledObject> changeCB;
 
     // TODO - object rotation
@@ -31,7 +35,7 @@ public class InstalledObject
 
     }
 
-    public static InstalledObject CreatePrototype(string type, int width=1, int height=1, float moveCost=1f, bool ruleTile=false, string dragBuildPattern = "Single", string layer = "Default", int stages = 0)
+    public static InstalledObject CreatePrototype(string type, int width = 1, int height = 1, float moveCost = 1f, bool ruleTile = false, string dragBuildPattern = "Single", string layer = "Default", int stages = 0, string[] whitelistedTiles = null, string[] blacklistedTiles = null)
     {
         InstalledObject obj = new InstalledObject();
         obj.type = type;
@@ -42,6 +46,8 @@ public class InstalledObject
         obj.dragBuildPattern = dragBuildPattern;
         obj.layer = layer;
         obj.stages = stages;
+        obj.whitelistedTiles = whitelistedTiles;
+        obj.blacklistedTiles = blacklistedTiles;
         return obj;
     }
 
@@ -57,6 +63,8 @@ public class InstalledObject
         obj.layer = proto.layer;
         obj.stages = proto.stages;
         obj.stage = 0;
+        obj.whitelistedTiles = proto.whitelistedTiles;
+        obj.blacklistedTiles = proto.blacklistedTiles;
 
         obj.tile = tile;
         if(tile.installedObject != null)

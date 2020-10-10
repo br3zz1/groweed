@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,6 +8,10 @@ public class ButtonMenuScript : MonoBehaviour
 {
     public static ButtonMenuScript Instance { get; protected set; }
     public Sprite bulldozeSprite;
+
+    
+
+    public GameObject mouseController;
 
     public GameObject creativeHotbar;
     public GameObject inventoryHotbar;
@@ -22,6 +27,8 @@ public class ButtonMenuScript : MonoBehaviour
 
     public GameObject buttonPrefab;
 
+    public InventorySlot[] invSlots;
+
     public void Start()
     {
         if (Instance != null)
@@ -32,6 +39,8 @@ public class ButtonMenuScript : MonoBehaviour
 
         terraformMenuEnabled = terraformMenu.activeSelf;
         objectMenuEnabled = objectMenu.activeSelf;
+
+        invSlots = inventoryHotbar.transform.GetComponentsInChildren<InventorySlot>();
 
         GenerateButton("objects", "Remove", "Remove", bulldozeSprite);
     }
@@ -86,12 +95,12 @@ public class ButtonMenuScript : MonoBehaviour
 
     public void SetTerraform(string s)
     {
-        MouseController.Instance.SetTerraformTile(s);
+        MouseControllerCreative.Instance.SetTerraformTile(s);
     }
 
     public void SetObject(string s)
     {
-        MouseController.Instance.SetInstalledObject(s);
+        MouseControllerCreative.Instance.SetInstalledObject(s);
     }
 
     public void terraformMenuEnable()
@@ -125,7 +134,31 @@ public class ButtonMenuScript : MonoBehaviour
     public void switchHotbar()
     {
         creative = !creative;
+
+        if(mouseController.GetComponent<MouseControllerCreative>().enabled)
+        {
+            MouseControllerCreative.Instance.SetSelect();
+        }
+
         creativeHotbar.SetActive(creative);
+        mouseController.GetComponent<MouseControllerCreative>().enabled = creative;
+        
+
         inventoryHotbar.SetActive(!creative);
+        mouseController.GetComponent<MouseController>().enabled = !creative;
+    }
+
+    public void onInventoryChanged(Inventory inv)
+    {
+        for(int i = 0; i < invSlots.Length; i++)
+        {
+            invSlots[i].setStack(inv.getItemStackAt(i));
+        }
+        Debug.Log(invSlots.Length);
+    }
+    public void updateInventory()
+    {
+        Inventory inv = WorldController.Instance.playerInv;
+
     }
 }
