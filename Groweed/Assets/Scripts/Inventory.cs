@@ -22,7 +22,7 @@ public class Inventory
 
     public void addItemStack(ItemStack stack, int slot)
     {
-        if (slot > size - 1) return;
+        if (slot > slots.Length - 1) return;
         ItemStack ss = slots[slot];
         if (ss != null) 
         {
