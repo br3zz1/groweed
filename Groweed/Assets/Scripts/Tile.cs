@@ -9,17 +9,17 @@ public class Tile
     string type = "Grass";
     Action<Tile> cbTileTypeChanged;
     TileMeta[] meta;
-    
+
     public string Type { get => type; set
         {
             if (type == value) return;
             type = value;
             cbTileTypeChanged?.Invoke(this);
-        } 
+        }
     }
 
 
-    LooseObject looseObject;
+    public LooseObject looseObject { get; protected set; }
     public InstalledObject installedObject { get; protected set; }
 
     public World world { get; protected set; }
@@ -45,13 +45,21 @@ public class Tile
 
     public void InstallObject(InstalledObject obj)
     {
-        if (obj == null) installedObject = null;
-        if (installedObject != null)
+        if (installedObject != null || looseObject != null)
         {
-            if (installedObject.layer != "Background") return;
-            world.RemoveInstalledObject(this);
+            return;
         }
         installedObject = obj;
+    }
+
+    public bool SetLooseObject(LooseObject obj)
+    {
+        if(installedObject != null || looseObject != null)
+        {
+            return false;
+        }
+        looseObject = obj;
+        return true;
     }
 
 }
