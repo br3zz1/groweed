@@ -723,7 +723,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 100
   height: 100
-  randomTickSpeed: 10
+  randomTickSpeed: 1
 --- !u!1 &403878834
 GameObject:
   m_ObjectHideFlags: 0

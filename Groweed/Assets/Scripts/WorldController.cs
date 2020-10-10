@@ -86,6 +86,7 @@ public class WorldController : MonoBehaviour
 
         Sprite[] _tileSprites = Resources.LoadAll<Sprite>("Sprites/Tiles");
         Sprite[] _installedObjectSprites = Resources.LoadAll<Sprite>("Sprites/InstalledObjects");
+        Sprite[] _itemSprites = Resources.LoadAll<Sprite>("Sprites/Items");
 
         foreach (Sprite s in _tileSprites)
         {
@@ -95,6 +96,10 @@ public class WorldController : MonoBehaviour
         foreach (Sprite s in _installedObjectSprites)
         {
             installedObjectSprites[s.name] = s;
+        }
+        foreach (Sprite s in _itemSprites)
+        {
+            Item.CreateItem(s.name,s);
         }
     }
 
@@ -262,7 +267,10 @@ public class WorldController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        tileUpdate();
+        for (int i = 0; i < randomTickSpeed; i++)
+        {
+            tileUpdate();
+        }
     }
 
     void tileUpdate()
