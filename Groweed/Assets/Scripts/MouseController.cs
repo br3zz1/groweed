@@ -25,7 +25,7 @@ public class MouseController : MonoBehaviour
     bool dragStarted = false;
     string dragBuildPattern = "Fill";
 
-    private string tool = "BuildTile";
+    private string tool = "Select";
 
     private string tileType = "Dirt";
     private string objectType = "Wall";
@@ -67,114 +67,121 @@ public class MouseController : MonoBehaviour
             Camera.main.transform.Translate(diff);
         }*/
 
-        // ---------------------------------- Select Area Thingy
-        if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
+
+        if(tool != "Select")
         {
-            dragStarted = true;
-            dragStart = currFramePosition;
-        }
-        if (Input.GetMouseButton(0) && dragStarted && dragBuildPattern != "Single")
-        {
-            int startX = Mathf.FloorToInt(dragStart.x);
-            int startY = Mathf.FloorToInt(dragStart.y);
-            int endX = Mathf.FloorToInt(currFramePosition.x);
-            int endY = Mathf.FloorToInt(currFramePosition.y);
-            if (startX != endX || startY != endY)
+            // ---------------------------------- Select Area Thingy
+            if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
             {
-                if (endX < startX)
-                {
-                    int tmp = endX;
-                    endX = startX;
-                    startX = tmp;
-                }
-                if (endY < startY)
-                {
-                    int tmp = endY;
-                    endY = startY;
-                    startY = tmp;
-                }
-                tileCursorBL.transform.position = new Vector3(startX, startY, 0);
-                tileCursorBR.transform.position = new Vector3(endX, startY, 0);
-                tileCursorTL.transform.position = new Vector3(startX, endY, 0);
-                tileCursorTR.transform.position = new Vector3(endX, endY, 0);
-                SetCursorsActive(true);
-            } else
-            {
-                SetCursorsActive(false);
+                dragStarted = true;
+                dragStart = currFramePosition;
             }
-        }
-        if (Input.GetMouseButtonUp(0) && dragStarted)
-        {
-            if(dragBuildPattern == "Single")
+            if (Input.GetMouseButton(0) && dragStarted && dragBuildPattern != "Single")
             {
-                Tile t = WorldController.Instance.GetTileAtWorldCoord(currFramePosition);
-                WorldController.Instance.world.PlaceInstalledObject(objectType, t);
-                dragStarted = false;
-            } else
-            {
-                SetCursorsActive(false);
                 int startX = Mathf.FloorToInt(dragStart.x);
                 int startY = Mathf.FloorToInt(dragStart.y);
                 int endX = Mathf.FloorToInt(currFramePosition.x);
                 int endY = Mathf.FloorToInt(currFramePosition.y);
-                if (endX < startX)
+                if (startX != endX || startY != endY)
                 {
-                    int tmp = endX;
-                    endX = startX;
-                    startX = tmp;
-                }
-                if (endY < startY)
-                {
-                    int tmp = endY;
-                    endY = startY;
-                    startY = tmp;
-                }
-
-                for (int x = startX; x <= endX; x++)
-                {
-                    for (int y = startY; y <= endY; y++)
+                    if (endX < startX)
                     {
-                        Tile t = WorldController.Instance.world.GetTileAt(x, y);
-                        if (t != null)
+                        int tmp = endX;
+                        endX = startX;
+                        startX = tmp;
+                    }
+                    if (endY < startY)
+                    {
+                        int tmp = endY;
+                        endY = startY;
+                        startY = tmp;
+                    }
+                    tileCursorBL.transform.position = new Vector3(startX, startY, 0);
+                    tileCursorBR.transform.position = new Vector3(endX, startY, 0);
+                    tileCursorTL.transform.position = new Vector3(startX, endY, 0);
+                    tileCursorTR.transform.position = new Vector3(endX, endY, 0);
+                    SetCursorsActive(true);
+                }
+                else
+                {
+                    SetCursorsActive(false);
+                }
+            }
+            if (Input.GetMouseButtonUp(0) && dragStarted)
+            {
+                if (dragBuildPattern == "Single")
+                {
+                    Tile t = WorldController.Instance.GetTileAtWorldCoord(currFramePosition);
+                    WorldController.Instance.world.PlaceInstalledObject(objectType, t);
+                    dragStarted = false;
+                }
+                else
+                {
+                    SetCursorsActive(false);
+                    int startX = Mathf.FloorToInt(dragStart.x);
+                    int startY = Mathf.FloorToInt(dragStart.y);
+                    int endX = Mathf.FloorToInt(currFramePosition.x);
+                    int endY = Mathf.FloorToInt(currFramePosition.y);
+                    if (endX < startX)
+                    {
+                        int tmp = endX;
+                        endX = startX;
+                        startX = tmp;
+                    }
+                    if (endY < startY)
+                    {
+                        int tmp = endY;
+                        endY = startY;
+                        startY = tmp;
+                    }
+
+                    for (int x = startX; x <= endX; x++)
+                    {
+                        for (int y = startY; y <= endY; y++)
                         {
-                            if (tool == "BuildTile")
+                            Tile t = WorldController.Instance.world.GetTileAt(x, y);
+                            if (t != null)
                             {
-                                t.Type = tileType;
-                            }
-                            else if (tool == "BuildInstalled")
-                            {
-                                if (objectType == "Remove")
+                                if (tool == "BuildTile")
                                 {
-                                    WorldController.Instance.world.RemoveInstalledObject(t);
+                                    t.Type = tileType;
                                 }
-                                else 
+                                else if (tool == "BuildInstalled")
                                 {
-                                    if(dragBuildPattern == "Fill_Hollow")
+                                    if (objectType == "Remove")
                                     {
-                                        if (x == startX || x == endX || y == startY || y == endY)
+                                        WorldController.Instance.world.RemoveInstalledObject(t);
+                                    }
+                                    else
+                                    {
+                                        if (dragBuildPattern == "Fill_Hollow")
+                                        {
+                                            if (x == startX || x == endX || y == startY || y == endY)
+                                            {
+                                                if (t.Type != "Water")
+                                                {
+                                                    WorldController.Instance.world.PlaceInstalledObject(objectType, t);
+                                                }
+                                            }
+
+                                        }
+                                        else if (dragBuildPattern == "Fill")
                                         {
                                             if (t.Type != "Water")
                                             {
                                                 WorldController.Instance.world.PlaceInstalledObject(objectType, t);
                                             }
                                         }
-                                        
-                                    }
-                                    else if(dragBuildPattern == "Fill")
-                                    {
-                                        if (t.Type != "Water")
-                                        {
-                                            WorldController.Instance.world.PlaceInstalledObject(objectType, t);
-                                        }
                                     }
                                 }
                             }
                         }
                     }
+                    dragStarted = false;
                 }
-                dragStarted = false;
             }
         }
+        
 
         lastFramePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
@@ -227,5 +234,10 @@ public class MouseController : MonoBehaviour
         }
         dragBuildPattern = WorldController.Instance.world.getInstalledObjectPrototypeDragBuildPattern(objectType);
         toolSelected.GetComponent<SpriteRenderer>().sprite = WorldController.Instance.getInstalledObjectSpriteByName(obj);
+    }
+
+    public void SetSelect()
+    {
+        tool = "Select";
     }
 }

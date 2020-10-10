@@ -6,6 +6,11 @@ using UnityEngine.UI;
 public class ButtonMenuScript : MonoBehaviour
 {
     public static ButtonMenuScript Instance { get; protected set; }
+    public Sprite bulldozeSprite;
+
+    public GameObject creativeHotbar;
+    public GameObject inventoryHotbar;
+    bool creative = false;
 
     public GameObject terraformMenu;
     bool terraformMenuEnabled = false;
@@ -28,10 +33,10 @@ public class ButtonMenuScript : MonoBehaviour
         terraformMenuEnabled = terraformMenu.activeSelf;
         objectMenuEnabled = objectMenu.activeSelf;
 
-        GenerateButton("objects", "Remove", "Remove");
+        GenerateButton("objects", "Remove", "Remove", bulldozeSprite);
     }
 
-    public void GenerateButton(string menu, string visibleName, string name)
+    public void GenerateButton(string menu, string visibleName, string name, Sprite sprite)
     {
         if(menu == "terraform")
         {
@@ -39,6 +44,7 @@ public class ButtonMenuScript : MonoBehaviour
             button.transform.SetParent(terraformMenu.transform);
             button.name = "Button - " + visibleName;
             button.GetComponentInChildren<Text>().text = visibleName;
+            button.transform.GetChild(0).GetComponent<Image>().sprite = sprite;
             button.GetComponent<Button>().onClick.AddListener(() => { SetTerraform(name); });
             terraformMenuButtons++;
         } else if(menu == "objects")
@@ -47,6 +53,7 @@ public class ButtonMenuScript : MonoBehaviour
             button.transform.SetParent(objectMenu.transform);
             button.name = "Button - " + visibleName;
             button.GetComponentInChildren<Text>().text = visibleName;
+            button.transform.GetChild(0).GetComponent<Image>().sprite = sprite;
             button.GetComponent<Button>().onClick.AddListener(() => { SetObject(name); });
             objectMenuButtons++;
         }
@@ -115,5 +122,10 @@ public class ButtonMenuScript : MonoBehaviour
         }
     }
 
-
+    public void switchHotbar()
+    {
+        creative = !creative;
+        creativeHotbar.SetActive(creative);
+        inventoryHotbar.SetActive(!creative);
+    }
 }

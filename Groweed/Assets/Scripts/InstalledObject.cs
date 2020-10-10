@@ -22,8 +22,7 @@ public class InstalledObject
             changeCB?.Invoke(this);
         }
     }
-    public int stages;
-    public Action updateAction;
+    public int stages { get; protected set; }
     int width;
     int height;
 

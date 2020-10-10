@@ -45,6 +45,12 @@ public class WorldController : MonoBehaviour
         world.RegisterInstalledObjectCreatedCB(onInstalledObjectCreated);
         world.RegisterInstalledObjectRemovedCB(onInstalledObjectRemoved);
 
+        foreach (KeyValuePair<string,InstalledObject> pair in world.installedObjectPrototypes)
+        {
+            ButtonMenuScript.Instance.GenerateButton("objects", pair.Key, pair.Key, getInstalledObjectSpriteByName(pair.Key));
+        }
+        
+
         // Object maps
         tileGameObjectMap = new Dictionary<Tile, GameObject>();
         installedObjectGameObjectMap = new Dictionary<InstalledObject, GameObject>();
@@ -84,13 +90,11 @@ public class WorldController : MonoBehaviour
         foreach (Sprite s in _tileSprites)
         {
             tileSprites[s.name] = s;
-            Debug.Log(ButtonMenuScript.Instance);
-            ButtonMenuScript.Instance.GenerateButton("terraform", s.name, s.name);
+            ButtonMenuScript.Instance.GenerateButton("terraform", s.name, s.name, s);
         }
         foreach (Sprite s in _installedObjectSprites)
         {
             installedObjectSprites[s.name] = s;
-            Debug.Log(s.name);
         }
     }
 
@@ -113,8 +117,16 @@ public class WorldController : MonoBehaviour
         installedObjectGameObjectMap.Add(obj, obj_go);
 
         obj_go.name = obj.type + "_" + obj.tile.x + "_" + obj.tile.y;
-        obj_go.transform.position = new Vector3(obj.tile.x, obj.tile.y, ((float)obj.tile.y/(float)height));
-        obj_go.transform.SetParent(this.transform, true);
+        float z;
+        if(obj.layer == "Background")
+        {
+            z = 1;
+        } else
+        {
+            z = (float)obj.tile.y / height;
+        }
+        obj_go.transform.position = new Vector3(obj.tile.x, obj.tile.y, z);
+        obj_go.transform.SetParent(transform, true);
         if(obj.movementCost == 0)
         {
             BoxCollider2D bc = obj_go.AddComponent<BoxCollider2D>();
