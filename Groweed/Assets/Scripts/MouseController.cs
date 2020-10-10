@@ -239,5 +239,6 @@ public class MouseController : MonoBehaviour
     public void SetSelect()
     {
         tool = "Select";
+        toolSelected.GetComponent<SpriteRenderer>().sprite = null;
     }
 }
