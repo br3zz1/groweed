@@ -27,7 +27,15 @@ public class ButtonMenuScript : MonoBehaviour
 
     public GameObject buttonPrefab;
 
+    public GameObject objectInventoryPanel;
+    public GameObject inventorySlotPrefab;
+
     public InventorySlot[] invSlots;
+    public InventorySlot[] objectInvSlots;
+
+    Inventory objectInventory;
+
+    public Inventory playerInv;
 
     public void Start()
     {
@@ -40,7 +48,18 @@ public class ButtonMenuScript : MonoBehaviour
         terraformMenuEnabled = terraformMenu.activeSelf;
         objectMenuEnabled = objectMenu.activeSelf;
 
-        invSlots = inventoryHotbar.transform.GetComponentsInChildren<InventorySlot>();
+        playerInv = new Inventory(9);
+
+        invSlots = new InventorySlot[9];
+        int i = 0;
+        foreach(Transform child in inventoryHotbar.transform)
+        {
+            InventorySlot invSlot = child.GetComponent<InventorySlot>();
+            invSlot.index = i;
+            invSlot.inv = playerInv;
+            invSlots[i] = invSlot;
+            i++;
+        }
 
         GenerateButton("objects", "Remove", "Remove", bulldozeSprite);
     }
@@ -154,11 +173,43 @@ public class ButtonMenuScript : MonoBehaviour
         {
             invSlots[i].setStack(inv.getItemStackAt(i));
         }
-        Debug.Log(invSlots.Length);
     }
-    public void updateInventory()
-    {
-        Inventory inv = WorldController.Instance.playerInv;
 
+    public void openObjectInventory(InstalledObject obj)
+    {
+        closeObjectInventory();
+        objectInventory = obj.inventory;
+        objectInventoryPanel.SetActive(true);
+        objectInvSlots = new InventorySlot[objectInventory.getSlotCount()];
+        for (int i = 0; i < objectInventory.getSlotCount(); i++)
+        {
+            GameObject invSlot = Instantiate(inventorySlotPrefab);
+            invSlot.transform.SetParent(objectInventoryPanel.transform);
+            InventorySlot inventorySlot = invSlot.GetComponent<InventorySlot>();
+            inventorySlot.index = i;
+            inventorySlot.inv = obj.inventory;
+            objectInvSlots[i] = inventorySlot;
+        }
+        onObjectInventoryChanged(obj.inventory);
+    }
+
+    public void onObjectInventoryChanged(Inventory inv)
+    {
+        if (objectInventory != inv) return;
+        for (int i = 0; i < objectInvSlots.Length; i++)
+        {
+            Debug.Log(objectInvSlots[i]);
+            objectInvSlots[i].setStack(inv.getItemStackAt(i));
+        }
+    }
+
+    public void closeObjectInventory()
+    {
+        objectInventory = null;
+        foreach (Transform child in objectInventoryPanel.transform)
+        {
+            Destroy(child.gameObject);
+        }
+        objectInventoryPanel.SetActive(false);
     }
 }

@@ -21,6 +21,8 @@ public class MouseController : MonoBehaviour
     // Player reach
     public float reach = 5;
 
+    public Tile tileUnderMouse;
+
     void Start()
     {
         if (Instance != null)
@@ -40,7 +42,7 @@ public class MouseController : MonoBehaviour
 
         // Get tile under cursor and render selector
 
-        Tile tileUnderMouse = WorldController.Instance.GetTileAtWorldCoord(reachPosition);
+        tileUnderMouse = WorldController.Instance.GetTileAtWorldCoord(reachPosition);
         if (tileUnderMouse != null)
         {
             tileCursor.SetActive(true);
@@ -58,9 +60,39 @@ public class MouseController : MonoBehaviour
         {
             if(itemStackInHand != null)
             {
-                if(LooseObject.PlaceLooseObject())
+                if(LooseObject.PlaceLooseObject(tileUnderMouse,itemStackInHand))
+                {
+                    itemStackInHand = null;
+                } else
+                {
+                    if (tileUnderMouse.installedObject != null)
+                    {
+                        InstalledObject obj = tileUnderMouse.installedObject;
+                        if (obj.inventory != null)
+                        {
+                            ButtonMenuScript.Instance.openObjectInventory(obj);
+                        }
+                    }
+                }
+            } else
+            {
+                if(tileUnderMouse.looseObject != null)
+                {
+                    itemStackInHand = tileUnderMouse.looseObject.stack;
+                    LooseObject.RemoveLooseObject(tileUnderMouse.looseObject);
+                } else
+                {
+                    ButtonMenuScript.Instance.closeObjectInventory();
+                }
+                if(tileUnderMouse.installedObject != null)
+                {
+                    InstalledObject obj = tileUnderMouse.installedObject;
+                    if(obj.inventory != null)
+                    {
+                        ButtonMenuScript.Instance.openObjectInventory(obj);
+                    }
+                }
             }
-            WorldController.Instance.playerInv.addItemStack(new ItemStack(Item.getItemByType("Stick"),1));
         }
 
         // CAMERA ZOOM
@@ -94,7 +126,11 @@ public class MouseController : MonoBehaviour
         toolSelected.transform.position = toolIconPos;
 
         toolSelected.transform.localScale = new Vector3(toolSelectedScale, toolSelectedScale, toolSelectedScale);
-        if (itemStackInHand == null) return;
+        if (itemStackInHand == null)
+        {
+            toolSelected.GetComponent<SpriteRenderer>().sprite = null;
+            return;
+        }
         toolSelected.GetComponent<SpriteRenderer>().sprite = itemStackInHand.item.sprite;
     }
 

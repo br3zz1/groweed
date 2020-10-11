@@ -20,8 +20,12 @@ public class InstalledObject
         }
     }
     public int stages { get; protected set; }
+    public Inventory inventory { get; protected set; }
+    public int inventorySlotCount;
+
     int width;
     int height;
+    
 
     public string[] whitelistedTiles { get; protected set; }
     public string[] blacklistedTiles { get; protected set; }
@@ -35,7 +39,18 @@ public class InstalledObject
 
     }
 
-    public static InstalledObject CreatePrototype(string type, int width = 1, int height = 1, float moveCost = 1f, bool ruleTile = false, string dragBuildPattern = "Single", string layer = "Default", int stages = 0, string[] whitelistedTiles = null, string[] blacklistedTiles = null)
+    public static InstalledObject CreatePrototype(
+        string type, 
+        int width = 1, 
+        int height = 1, 
+        float moveCost = 1f, 
+        bool ruleTile = false, 
+        string dragBuildPattern = "Single", 
+        string layer = "Default", 
+        int stages = 0, 
+        string[] whitelistedTiles = null, 
+        string[] blacklistedTiles = null, 
+        int inventorySlotCount = 0)
     {
         InstalledObject obj = new InstalledObject();
         obj.type = type;
@@ -48,6 +63,7 @@ public class InstalledObject
         obj.stages = stages;
         obj.whitelistedTiles = whitelistedTiles;
         obj.blacklistedTiles = blacklistedTiles;
+        obj.inventorySlotCount = inventorySlotCount;
         return obj;
     }
 
@@ -65,6 +81,11 @@ public class InstalledObject
         obj.stage = 0;
         obj.whitelistedTiles = proto.whitelistedTiles;
         obj.blacklistedTiles = proto.blacklistedTiles;
+        obj.inventorySlotCount = proto.inventorySlotCount;
+        if (obj.inventorySlotCount > 0)
+        {
+            obj.inventory = new Inventory(obj.inventorySlotCount);
+        }
 
         obj.tile = tile;
         if(tile.installedObject != null)

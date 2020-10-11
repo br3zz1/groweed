@@ -72,6 +72,12 @@ public class World
         {
             for (int y = height-1; y >= 0; y--)
             {
+                if(x == 51 && y == 50)
+                {
+                    PlaceInstalledObject("Chest", tiles[x, y]);
+                    tiles[x, y].installedObject.inventory.addItemStack(new ItemStack(Item.getItemByType("Stick"),20));
+                    continue;
+                }
                 if (UnityEngine.Random.Range(0, 1000) > 925 && tiles[x, y].Type == "Grass")
                 {
                     PlaceInstalledObject("Tree", tiles[x, y]);
@@ -112,6 +118,10 @@ public class World
         }
         InstalledObject obj = InstalledObject.InstallObject(proto, t);
         if (obj == null) return;
+        if( obj.inventory != null )
+        {
+            obj.inventory.RegisterChangeCB(ButtonMenuScript.Instance.onObjectInventoryChanged);
+        }
         if (installedObjectCreatedCB != null) installedObjectCreatedCB(obj);
     }
 
@@ -128,11 +138,6 @@ public class World
             InstalledObject.UpdateNeighbours(t, obj);
         }
         if (installedObjectRemovedCB != null)installedObjectRemovedCB(obj);
-    }
-
-    public void PlaceLooseObject(ItemStack stack, Tile t)
-    {
-        LooseObject looseObject = new LooseObject(t,stack);
     }
 
     public Tile GetTileAt(int x, int y)
@@ -242,5 +247,8 @@ public class World
         InstalledObject plantPrototype = InstalledObject.CreatePrototype("Plant", stages: 4, blacklistedTiles: defaultBlacklist);
         installedObjectPrototypes.Add("Plant", plantPrototype);
         //ButtonMenuScript.Instance.GenerateButton("objects", "Plant", "Plant", WorldController.Instance.getInstalledObjectSpriteByName("Plant"));
+        InstalledObject chestPrototype = InstalledObject.CreatePrototype("Chest", moveCost: 0f, blacklistedTiles: defaultBlacklist, inventorySlotCount: 5);
+        installedObjectPrototypes.Add("Chest", chestPrototype);
+
     }
 }

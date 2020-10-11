@@ -17,6 +17,16 @@ public class Inventory
     {
         for (int i = 0; i < slots.Length; i++)
         {
+            if(slots[i] != null && stack != null)
+            {
+                if (slots[i].item == stack.item)
+                {
+                    return addItemStack(stack, i);
+                }
+            }
+        }
+        for (int i = 0; i < slots.Length; i++)
+        {
             if(addItemStack(stack,i))
             {
                 return true;
@@ -55,6 +65,11 @@ public class Inventory
     {
         if (index >= slots.Length) return null;
         return slots[index];
+    }
+
+    public int getSlotCount()
+    {
+        return slots.Length;
     }
 
     public void RegisterChangeCB(Action<Inventory> cb)

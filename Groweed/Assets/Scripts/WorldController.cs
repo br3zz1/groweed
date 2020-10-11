@@ -22,6 +22,7 @@ public class WorldController : MonoBehaviour
 
     Dictionary<Tile, GameObject> tileGameObjectMap;
     Dictionary<InstalledObject, GameObject> installedObjectGameObjectMap;
+    Dictionary<LooseObject, GameObject> looseObjectGameObjectMap;
 
     public int width;
     public int height;
@@ -43,13 +44,16 @@ public class WorldController : MonoBehaviour
         LoadSprites();
 
         // Instantiate player inventory
-        playerInv = new Inventory(9);
+        playerInv = ButtonMenuScript.Instance.playerInv;
         playerInv.RegisterChangeCB(ButtonMenuScript.Instance.onInventoryChanged);
+        playerInv.addItemStack(new ItemStack(Item.getItemByType("Stick"),1));
 
         // Generate world
         world = new World(width,height);
         world.RegisterInstalledObjectCreatedCB(onInstalledObjectCreated);
         world.RegisterInstalledObjectRemovedCB(onInstalledObjectRemoved);
+        LooseObject.RegisterLooseObjectCreatedCB(onLooseObjectCreated);
+        LooseObject.RegisterLooseObjectRemovedCB(onLooseObjectRemoved);
 
         foreach (KeyValuePair<string,InstalledObject> pair in world.installedObjectPrototypes)
         {
@@ -60,6 +64,7 @@ public class WorldController : MonoBehaviour
         // Object maps
         tileGameObjectMap = new Dictionary<Tile, GameObject>();
         installedObjectGameObjectMap = new Dictionary<InstalledObject, GameObject>();
+        looseObjectGameObjectMap = new Dictionary<LooseObject, GameObject>();
 
         for(int x = 0; x < world.Width; x++)
         {
@@ -218,6 +223,35 @@ public class WorldController : MonoBehaviour
             return;
         }
         sr.sprite = installedObjectSprites[spriteKey];
+    }
+
+    void onLooseObjectCreated(LooseObject obj)
+    {
+        GameObject obj_go = new GameObject();
+
+        looseObjectGameObjectMap.Add(obj, obj_go);
+
+        obj_go.name = obj.stack.item.type + "_" + obj.tile.x + "_" + obj.tile.y;
+        obj_go.transform.position = new Vector3(obj.tile.x, obj.tile.y, 1);
+        obj_go.transform.SetParent(transform, true);
+        SpriteRenderer sr = obj_go.AddComponent<SpriteRenderer>();
+        sr.sprite = obj.stack.item.sprite;
+        sr.sortingLayerName = "InstalledObjects";
+
+        obj.RegisterLooseObjectChangedCB(onLooseObjectChanged);
+    }
+
+    void onLooseObjectChanged(LooseObject obj)
+    {
+        GameObject obj_go = looseObjectGameObjectMap[obj];
+
+    }
+
+    void onLooseObjectRemoved(LooseObject obj)
+    {
+        GameObject obj_go = looseObjectGameObjectMap[obj];
+        looseObjectGameObjectMap.Remove(obj);
+        Destroy(obj_go);
     }
 
     string getRuleTileForInstalledObject(InstalledObject obj)
